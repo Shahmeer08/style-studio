@@ -1,0 +1,9 @@
+{
+  "name": "Style Studio",
+  "short_name": "Style Studio",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f1e9",
+  "theme_color": "#252923",
+  "description": "A private, local-first personal wardrobe manager."
+}
