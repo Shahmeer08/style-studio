@@ -1,33 +1,30 @@
-# STYLE STUDIO v1.0 — Local-first wardrobe manager
+# STYLE STUDIO v2.1.0 — Local Magic Cutout
 
-## What this first version does
-- Add clothing items with photos, categories, colours, seasons, fit, occasion and notes.
-- Search and filter your wardrobe.
-- Edit and delete items.
-- Select wardrobe pieces and save outfit combinations.
-- Export and import a full JSON backup, including photos.
-- Works offline after the first successful load when installed/hosted as a PWA.
+## What's new
+- Adds a one-tap Magic Cutout action to the Add Piece screen.
+- Uses `@bg0/browser` with BiRefNet in the browser (WebGPU/WASM).
+- The selected photo is processed on-device; the photo itself is not uploaded for inference.
+- The first use downloads the model/runtime assets. Keep Safari open and connected to the internet until the model is ready.
+- The cutout is shown for review before saving. The original image is retained in the item record when a cutout is applied, and can be restored while editing.
+- The existing IndexedDB database name, version, and object stores are unchanged.
 
-## Privacy model
-- No login, analytics, advertising, tracking, cloud database or external AI calls.
-- Wardrobe records and images are stored in IndexedDB in the browser on that device.
-- The app shell (HTML/CSS/JS) must be served from a secure HTTPS origin for iPhone installation. Hosting the app shell does NOT send wardrobe photos or records to the host.
-- Browser storage is not encrypted by this app. Protect the iPhone with its passcode/Face ID.
-- Safari site data can be removed by the user or the operating system. Export backups regularly.
-- This version does not automatically sync the database to iCloud. You can save exported backup files manually to iCloud Drive or the Files app.
-- Do not assume iCloud device backup includes this PWA's browser database.
+## Important limitations
+- This is background removal, not semantic clothing extraction. If the clothing is being worn by a person, the model may keep the whole person. Single-garment photos on a plain or uncluttered background are the best starting point.
+- The library documents an iOS-specific single-threaded WASM path and reports testing on a physical iPhone 13; iPhone 11 Pro / the user's exact Safari build still needs real-device testing. If Safari runs out of memory, stop and report the error; do not repeatedly retry large images.
+- Model loading requires an internet connection the first time. Once downloaded, browser caching may allow later offline use, but Safari can evict cached assets.
+- The app shell is served by GitHub Pages. Wardrobe photos and database records remain in local Safari storage.
 
-## Install on iPhone
-1. Publish the contents of this folder to a static HTTPS host (for example, a GitHub Pages site). Do not upload any personal wardrobe data; only publish these app files.
-2. Open the published HTTPS address in Safari on your iPhone.
-3. Tap Share → Add to Home Screen → Add.
-4. Launch Style Studio from the Home Screen.
-5. Add a test item, export a backup, and confirm the JSON file appears in Files before adding your full wardrobe.
+## Privacy and licensing
+- `@bg0/browser` is Apache-2.0. Its model exports are MIT-licensed according to the project's third-party notices.
+- The model files are fetched from the model host on first use; image bytes are processed in the browser and are not sent to the model host.
+- No cloud inference, account, API key, or wardrobe sync is added.
 
-## Important
-This is a functional MVP, not a native iOS application. It does not use Face ID locking, native iCloud sync, or AI analysis yet. Those require a later native iOS development/signing workflow or carefully chosen on-device capabilities.
+## Deploy on GitHub Pages
+This project now uses Vite so the browser library's iOS worker/model assets can be emitted into the build and served from the same origin.
+1. Upload the complete contents of this project to the repository's `main` branch, replacing the old app files. Do not upload any personal wardrobe backup.
+2. In the repository, open **Settings → Pages**.
+3. Under **Build and deployment → Source**, choose **GitHub Actions**.
+4. Open the **Actions** tab and wait for **Deploy STYLE STUDIO** to finish successfully.
+5. Open `https://shahmeer08.github.io/style-studio/` in normal Safari mode (not Private Browsing).
 
-## Run locally on Windows for preview
-Use a local development server (not by double-clicking index.html) so IndexedDB and service worker behavior can be tested consistently. For example, with Python installed:
-`python -m http.server 8000`
-Then open `http://localhost:8000` on the Windows computer.
+The database remains `style-studio-db`, version 1, with the existing `items` and `outfits` stores. Do not clear Safari website data. Export a backup before making the update if possible.
